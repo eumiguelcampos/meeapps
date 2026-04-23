@@ -663,7 +663,15 @@ async function loadDB() {
         const local = localStorage.getItem('mee_db');
         if (local) { db = JSON.parse(local); }
         else { db.products = INITIAL_PRODUCTS.map((p, i) => ({ ...p, id: 'p' + i, imagem: '', obs: '' })); }
-        await saveDB();
+        saveDB();
+      }
+      const local = localStorage.getItem('mee_db');
+      if (local) {
+        const localDb = JSON.parse(local);
+        db.products = db.products.map(p => {
+          const lp = localDb.products?.find(x => x.id === p.id);
+          return lp && lp.imagem ? { ...p, imagem: lp.imagem } : p;
+        });
       }
       localStorage.setItem('mee_db', JSON.stringify(db));
     } else { throw new Error(); }
@@ -678,22 +686,19 @@ async function loadDB() {
 async function saveDB() {
   localStorage.setItem('mee_db', JSON.stringify(db));
   clearTimeout(saveTimer);
-  saveTimer = setTimeout(async () => {
+  saveTimer = setTimeout(() => {
     setSyncStatus('⏳ Salvando...', '#f59e0b');
-    try {
-      const dbLean = {
-        products: db.products.map(p => ({...p, imagem: ''})),
-        shopList: db.shopList,
-        projects: db.projects
-      };
-      const payload = encodeURIComponent(JSON.stringify(dbLean));
-      const res = await fetch(API + '?action=save&data=' + payload);
-      const r = await res.json();
-      if (r.ok) {
+    const dbLean = {
+      products: db.products.map(p => ({...p, imagem: ''})),
+      shopList: db.shopList,
+      projects: db.projects
+    };
+    fetch(API + '?action=save&data=' + encodeURIComponent(JSON.stringify(dbLean)), {mode: 'no-cors'})
+      .then(() => {
         setSyncStatus('✓ Salvo no Sheets', '#10b981');
         setTimeout(() => setSyncStatus('', ''), 3000);
-      } else throw new Error();
-    } catch { setSyncStatus('⚠ Sem conexão', '#ef4444'); }
+      })
+      .catch(() => setSyncStatus('⚠ Sem conexão', '#ef4444'));
   }, 1500);
 }
 

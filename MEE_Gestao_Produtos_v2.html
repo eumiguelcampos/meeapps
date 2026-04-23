@@ -731,15 +731,20 @@ async function loadDB(){
 }
 
 async function saveDB(){
-  // Salva local imediatamente
   localStorage.setItem('mee_db',JSON.stringify(db));
-  // Debounce: espera 1.5s após última ação pra não sobrecarregar
   clearTimeout(saveTimer);
   saveTimer=setTimeout(async()=>{
     const syncEl=document.getElementById('sync-status');
     if(syncEl){syncEl.textContent='⏳ Salvando...';syncEl.style.color='var(--warn)';}
     try{
-      const res=await fetch(API,{method:'POST',body:JSON.stringify({action:'save',data:db})});
+      // remove imagens base64 antes de enviar (ficam só no localStorage)
+      const dbLean={
+        products:db.products.map(p=>({...p,imagem:''})),
+        shopList:db.shopList,
+        projects:db.projects
+      };
+      const payload=encodeURIComponent(JSON.stringify(dbLean));
+      const res=await fetch(API+'?action=save&data='+payload);
       const r=await res.json();
       if(r.ok){
         if(syncEl){syncEl.textContent='✓ Salvo no Sheets';syncEl.style.color='var(--accent3)';}

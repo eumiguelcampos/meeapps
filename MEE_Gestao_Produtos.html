@@ -317,6 +317,7 @@
   <div class="page active" id="page-dashboard">
     <div class="topbar">
       <h1>Dashboard</h1>
+      <span id="sync-status" style="font-size:12px;color:#5a5a78;margin-right:8px"></span>
     </div>
     <div class="content">
       <div class="stats-row" id="stats-row"></div>
@@ -625,21 +626,70 @@
 const INITIAL_PRODUCTS = [{"linha":"MEE SENTINEL","categoria":"Torre/Totten","modelo":"Sentinel Solo","codigo":"ST-101","fornecedor":"Mee","modeloFornec":"Sentinel Solo","origem":"Brasil","cor":"Alluminium","descricao":"Totem de chão com botão de pânico e interfone para 190","custo":"","valor":"6899.9","lucro":"","valorComod":"489.9","estoque":"10"},{"linha":"MEE SENTINEL","categoria":"Torre/Totten","modelo":"Sentinel Wall","codigo":"ST-102","fornecedor":"Mee","modeloFornec":"Sentinel Wall","origem":"Brasil","cor":"Alluminium","descricao":"Totem de parede para fixação em fachadas.","custo":"","valor":"1849.9","lucro":"","valorComod":"139.9","estoque":"10"},{"linha":"MEE VISION","categoria":"Com Fio (Coaxial)","modelo":"Vision Dome HD","codigo":"VS-101","fornecedor":"White Label","modeloFornec":"White Label","origem":"China","cor":"Branco","descricao":"Câmera de teto para ambiente interno/beiral FIXA (Coaxial)","custo":"","valor":"149.9","lucro":"","valorComod":"XX","estoque":"10"},{"linha":"MEE VISION","categoria":"Com Fio (Coaxial)","modelo":"Vision Bullet HD","codigo":"VS-102","fornecedor":"White Label","modeloFornec":"White Label","origem":"China","cor":"Branco","descricao":"Câmera parede/teto externa  FIXA (Coaxial)","custo":"","valor":"149.9","lucro":"","valorComod":"XX","estoque":"10"},{"linha":"MEE VISION","categoria":"Com Fio (RJ45)","modelo":"Vision Pro Dome (4K)","codigo":"VS-103","fornecedor":"White Label","modeloFornec":"White Label","origem":"China","cor":"Branco","descricao":"Câmera de teto interno/beiral FIXA (RJ45).","custo":"","valor":"","lucro":"","valorComod":"XX","estoque":"10"},{"linha":"MEE VISION","categoria":"Com Fio (RJ45)","modelo":"Vision Pro Bullet (4K)","codigo":"VS-104","fornecedor":"White Label","modeloFornec":"White Label","origem":"China","cor":"Branco","descricao":"Câmera parede/teto externa FIXA (RJ45).","custo":"","valor":"","lucro":"","valorComod":"XX","estoque":"10"},{"linha":"MEE VISION","categoria":"Sem Fio (Wi-Fi)","modelo":"Orb Lite","codigo":"VS-105","fornecedor":"TP-link/Mercusys","modeloFornec":"MC219","origem":"China","cor":"Branco","descricao":"Câmera Robô / Interna / 360° /2K","custo":"139.9","valor":"239.9","lucro":"99.9","valorComod":"XX","estoque":"10"},{"linha":"MEE VISION","categoria":"Sem Fio (Wi-Fi)","modelo":"Orb FullHD","codigo":"VS-106","fornecedor":"TP-link/Tapo","modeloFornec":"C200","origem":"China","cor":"Branco","descricao":"Câmera Robô / Interna / 360°","custo":"229.9","valor":"329.9","lucro":"99.9","valorComod":"XX","estoque":"10"},{"linha":"MEE VISION","categoria":"Sem Fio (Wi-Fi)","modelo":"Orb FullHD IP65","codigo":"VS-107","fornecedor":"TP-link/Tapo","modeloFornec":"C500","origem":"China","cor":"Branco","descricao":"Câmera Robô / Externa / 360°","custo":"299.9","valor":"379.9","lucro":"119.9","valorComod":"XX","estoque":"10"},{"linha":"MEE VISION","categoria":"Sem Fio (Wi-Fi)","modelo":"Eye HD","codigo":"VS-108","fornecedor":"TP-link/Tapo","modeloFornec":"TC60","origem":"China","cor":"Preto/Branco","descricao":"Câmera Interna / Fixa / Wi-fi","custo":"149.9","valor":"249.9","lucro":"99.9","valorComod":"XX","estoque":"10"},{"linha":"MEE VISION","categoria":"Sem Fio (Wi-Fi)","modelo":"Eye Full HD","codigo":"VS-109","fornecedor":"TP-link/Tapo","modeloFornec":"C100","origem":"China","cor":"Preto/Branco","descricao":"Câmera Interna / Fixa / Wi-fi","custo":"149.9","valor":"249.9","lucro":"99.9","valorComod":"XX","estoque":"10"},{"linha":"MEE VISION","categoria":"Sem Fio (Wi-Fi)","modelo":"Eye 2k","codigo":"VS-110","fornecedor":"TP-link/Tapo","modeloFornec":"C113","origem":"China","cor":"Preto/Branco","descricao":"Câmera interna / Fixa / Wi-fi / 2K","custo":"179.9","valor":"279.9","lucro":"99.9","valorComod":"XX","estoque":"10"},{"linha":"MEE VISION","categoria":"Sem Fio (Wi-Fi)","modelo":"Hórus 2k","codigo":"VS-111","fornecedor":"TP-link/Tapo","modeloFornec":"C320WS","origem":"China","cor":"Preto/Branco","descricao":"Câmera Interna / Fixa / Wi-fi / 2K","custo":"179.9","valor":"279.9","lucro":"99.9","valorComod":"XX","estoque":"10"},{"linha":"MEE VISION","categoria":"Sem Fio (Wi-Fi)","modelo":"Hórus FullHD","codigo":"VS-112","fornecedor":"TP-link/Tapo","modeloFornec":"C206","origem":"China","cor":"Preto/Branco","descricao":"Câmera interna / Fixa / Wi-fi","custo":"179.9","valor":"279.9","lucro":"99.9","valorComod":"XX","estoque":"10"},{"linha":"MEE VISION","categoria":"Sem Fio (Wi-Fi)","modelo":"Solis 2k","codigo":"VS-113","fornecedor":"Ekaza","modeloFornec":"EKRW-T5294","origem":"China","cor":"Preto/Branco","descricao":"Câmera interna / Fixa / Wi-fi / Solar / 2K","custo":"179.9","valor":"279.9","lucro":"99.9","valorComod":"XX","estoque":"10"},{"linha":"MEE VISION","categoria":"Sem Fio (Wi-Fi/RJ45)","modelo":"Defender","codigo":"VS-114","fornecedor":"White Label","modeloFornec":"Tripla ICSEE","origem":"China","cor":"Preto e Cinza","descricao":"Câmera Robô / Externa / 360° /  Wi-Fi  / 3 lentes","custo":"199.9","valor":"299.9","lucro":"99.9","valorComod":"XX","estoque":"10"},{"linha":"MEE VISION","categoria":"DVR","modelo":"Core","codigo":"VS-115","fornecedor":"AiTek","modeloFornec":"Sigma D416BP","origem":"China","cor":"Preto","descricao":"DVR Inteligente, com conexão com celular, de 4 a 16 câmeras","custo":"R$ 270 ~ R$ 499","valor":"R$ 390 ~ R$948","lucro":"R$ 120 ~ R$ 448","valorComod":"XX","estoque":"10"},{"linha":"MEE KEYLESS","categoria":"Acesso","modelo":"Keyless Fit","codigo":"KL-101","fornecedor":"White Label","modeloFornec":"Tuya","origem":"China","cor":"Preto/Branco","descricao":"Fechadura de Sobrepor","custo":"","valor":"","lucro":"","valorComod":"XX","estoque":"10"},{"linha":"MEE KEYLESS","categoria":"Acesso","modelo":"Keyless Fit Wi-fi","codigo":"KL-102","fornecedor":"White Label","modeloFornec":"Tuya","origem":"China","cor":"Preto/Branco","descricao":"Fechadura de Sobrepor com App e Wi-fi","custo":"","valor":"","lucro":"","valorComod":"XX","estoque":"10"},{"linha":"MEE KEYLESS","categoria":"Acesso","modelo":"Keyless Pro","codigo":"KL-103","fornecedor":"White Label","modeloFornec":"Tuya","origem":"China","cor":"Preto/Branco","descricao":"Fechadura de Embutir Premium","custo":"","valor":"","lucro":"","valorComod":"XX","estoque":"10"},{"linha":"MEE KEYLESS","categoria":"Acesso","modelo":"Keyless Slim","codigo":"KL-104","fornecedor":"White Label","modeloFornec":"Tuya","origem":"China","cor":"Preto/Branco","descricao":"Fechadura para perfis finos (Alumínio).","custo":"","valor":"","lucro":"","valorComod":"XX","estoque":"10"},{"linha":"MEE SMART","categoria":"Energia","modelo":"Smart Switch 4x2","codigo":"SM-101","fornecedor":"White Label","modeloFornec":"Tuya","origem":"China","cor":"Preto/Branco","descricao":"Interruptor Touch Wi-Fi (Vidro) - 1 a 3 botões.","custo":"","valor":"","lucro":"","valorComod":"XX","estoque":"10"},{"linha":"MEE SMART","categoria":"Energia","modelo":"Smart Switch 4x4","codigo":"SM-102","fornecedor":"White Label","modeloFornec":"Tuya","origem":"China","cor":"Preto/Branco","descricao":"Interruptor Touch Wi-Fi (Vidro) - 4 a 6 botões.","custo":"","valor":"","lucro":"","valorComod":"XX","estoque":"10"},{"linha":"MEE SMART","categoria":"Energia","modelo":"Smart Plug (Single)","codigo":"SM-103","fornecedor":"White Label","modeloFornec":"Tuya","origem":"China","cor":"Branco","descricao":"Tomada Inteligente individual (10A/20A).","custo":"","valor":"59.9","lucro":"","valorComod":"XX","estoque":"10"},{"linha":"MEE SMART","categoria":"Energia","modelo":"Smart Switch Outlet 4x2","codigo":"SM-104","fornecedor":"White Label","modeloFornec":"Tuya","origem":"China","cor":"Preto/Branco","descricao":"Placa de parede inteligente com 1 interruptor e 1 tomada","custo":"","valor":"","lucro":"","valorComod":"XX","estoque":"10"},{"linha":"MEE SMART","categoria":"Energia","modelo":"Smart Outlet Wall 4x4","codigo":"SM-105","fornecedor":"White Label","modeloFornec":"Tuya","origem":"China","cor":"Preto/Branco","descricao":"Placa de parede inteligente com 1 ou 2 tomadas","custo":"","valor":"","lucro":"","valorComod":"XX","estoque":"10"},{"linha":"MEE SMART","categoria":"Energia","modelo":"Smart Switch Outlet 4x4","codigo":"SM-106","fornecedor":"White Label","modeloFornec":"Tuya","origem":"China","cor":"Preto/Branco","descricao":"Placa de parede Inteligente com 4 interruptores e 2 tomadas","custo":"","valor":"","lucro":"","valorComod":"XX","estoque":"10"},{"linha":"MEE SMART","categoria":"Iluminação","modelo":"Smart Bub","codigo":"SM-107","fornecedor":"White Label","modeloFornec":"Tuya","origem":"China","cor":"Branco","descricao":"Lâmpada LED RGB","custo":"29.9","valor":"59.9","lucro":"29.9","valorComod":"XX","estoque":"10"},{"linha":"MEE SMART","categoria":"Iluminação","modelo":"Smart LED Strip","codigo":"SM-108","fornecedor":"White Label","modeloFornec":"Tuya","origem":"China","cor":"RGB","descricao":"Fita de LED Wi-Fi (Rolo 5m) para sancas.","custo":"74.9","valor":"119.9","lucro":"44.9","valorComod":"XX","estoque":"10"},{"linha":"MEE SMART","categoria":"Conforto","modelo":"Smart IR Control","codigo":"SM-109","fornecedor":"White Label","modeloFornec":"Tuya","origem":"China","cor":"Preto","descricao":"Controle Remoto Universal (Ar/TV/Som).","custo":"49.9","valor":"99.9","lucro":"49.49","valorComod":"XX","estoque":"10"},{"linha":"MEE SMART","categoria":"Central Controle","modelo":"Control Station 7\"","codigo":"SM-110","fornecedor":"Multi","modeloFornec":"M7","origem":"Brasil","cor":"Preto/Branco","descricao":"Tablet de parede 7\" (Painel de comando do ecossistema)","custo":"454","valor":"890.9","lucro":"436","valorComod":"XX","estoque":"10"},{"linha":"MEE SMART","categoria":"Central Controle","modelo":"Control Station 10\"","codigo":"SM-111","fornecedor":"Multi","modeloFornec":"M10","origem":"Brasil","cor":"Preto/Branco","descricao":"Tablet de parede 10\" (Painel central de comando do ecossistema)","custo":"722","valor":"1499.9","lucro":"699.9","valorComod":"XX","estoque":"10"},{"linha":"MEE SOUND","categoria":"Amplificador","modelo":"Amplifier 450","codigo":"SD-101","fornecedor":"White Label","modeloFornec":"Ak55","origem":"China","cor":"Preto","descricao":"Central de som Ambiente 450W c/ Bluetooth e microfone","custo":"188","valor":"399.9","lucro":"212","valorComod":"XX","estoque":"10"},{"linha":"MEE SOUND","categoria":"Amplificador","modelo":"Amplifier 1000","codigo":"SD-102","fornecedor":"LeLong","modeloFornec":"714","origem":"China","cor":"Preto","descricao":"Central de som Home Theater 5.1 1000W","custo":"699","valor":"1399","lucro":"699","valorComod":"XX","estoque":"10"},{"linha":"MEE SOUND","categoria":"Caixas","modelo":"Wave Speaker","codigo":"SD-103","fornecedor":"Bomber","modeloFornec":"Permak","origem":"Brasil","cor":"Branco/Preto","descricao":"Arandela de embutir 6\"","custo":"79.9","valor":"119","lucro":"39.9","valorComod":"XX","estoque":"10"},{"linha":"MEE SOUND","categoria":"Caixas","modelo":"Wave Box","codigo":"SD-104","fornecedor":"LeSon","modeloFornec":"2LSA74CXP","origem":"Brasil","cor":"Preto/Branco","descricao":"Caixa de Som de sobrepor","custo":"75","valor":"149.9","lucro":"75","valorComod":"XX","estoque":"10"},{"linha":"MEE SOUND","categoria":"Caixas","modelo":"Wave Sub","codigo":"SD-105","fornecedor":"Exclusive","modeloFornec":"Mini Slim 200w","origem":"Brasil","cor":"Preto","descricao":"Subwoofer ativo Automotivo de chão 200W 8\"","custo":"373","valor":"899.9","lucro":"477","valorComod":"XX","estoque":"10"},{"linha":"MEE SOUND","categoria":"Caixas","modelo":"Wave Sub Premium","codigo":"SD-106","fornecedor":"Frahm","modeloFornec":"Rd SW Slim","origem":"Brasil","cor":"Preto","descricao":"Subwoofer ativo Residencial de chão 200W 8\"","custo":"1616","valor":"1999.9","lucro":"384","valorComod":"XX","estoque":"10"}];
 
 // ============ STATE ============
-let db = {
-  products: [],
-  shopList: [],
-  projects: []
-};
+const API = 'https://script.google.com/macros/s/AKfycbx0h7o6luTbsJpWprLIHmG9jPpj7guIUDAcSDVW8Rq7f1MLI-95CE1TAiKaMJxLiUpfEQ/exec';
+let db = { products: [], shopList: [], projects: [] };
+let saveTimer = null;
 
-function loadDB() {
-  const saved = localStorage.getItem('mee_db');
-  if (saved) {
-    db = JSON.parse(saved);
-  } else {
-    db.products = INITIAL_PRODUCTS.map((p, i) => ({ ...p, id: 'p' + i, imagem: '', obs: '' }));
+function showLoading(msg) {
+  let el = document.getElementById('loading-overlay');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'loading-overlay';
+    el.style.cssText = 'position:fixed;inset:0;background:rgba(10,10,15,.85);z-index:9998;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px';
+    el.innerHTML = '<div style="width:40px;height:40px;border:3px solid #2a2a3a;border-top-color:#00d4ff;border-radius:50%;animation:spin .7s linear infinite"></div><div id="loading-msg" style="color:#9090b0;font-size:14px"></div>';
+    const st = document.createElement('style');
+    st.textContent = '@keyframes spin{to{transform:rotate(360deg)}}';
+    document.head.appendChild(st);
+    document.body.appendChild(el);
   }
+  document.getElementById('loading-msg').textContent = msg || 'Carregando...';
+  el.style.display = 'flex';
 }
-function saveDB() { localStorage.setItem('mee_db', JSON.stringify(db)); }
+function hideLoading() { const el = document.getElementById('loading-overlay'); if (el) el.style.display = 'none'; }
+
+function setSyncStatus(msg, color) {
+  const el = document.getElementById('sync-status');
+  if (el) { el.textContent = msg; el.style.color = color; }
+}
+
+async function loadDB() {
+  showLoading('Sincronizando com Google Sheets...');
+  try {
+    const res = await fetch(API + '?action=load');
+    const data = await res.json();
+    if (data.products !== undefined) {
+      db = data;
+      if (!db.products.length) {
+        const local = localStorage.getItem('mee_db');
+        if (local) { db = JSON.parse(local); }
+        else { db.products = INITIAL_PRODUCTS.map((p, i) => ({ ...p, id: 'p' + i, imagem: '', obs: '' })); }
+        await saveDB();
+      }
+      localStorage.setItem('mee_db', JSON.stringify(db));
+    } else { throw new Error(); }
+  } catch (e) {
+    const local = localStorage.getItem('mee_db');
+    if (local) { db = JSON.parse(local); notif('Offline — usando dados locais', true); }
+    else { db.products = INITIAL_PRODUCTS.map((p, i) => ({ ...p, id: 'p' + i, imagem: '', obs: '' })); }
+  }
+  hideLoading();
+}
+
+async function saveDB() {
+  localStorage.setItem('mee_db', JSON.stringify(db));
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(async () => {
+    setSyncStatus('⏳ Salvando...', '#f59e0b');
+    try {
+      const res = await fetch(API, { method: 'POST', body: JSON.stringify({ action: 'save', data: db }) });
+      const r = await res.json();
+      if (r.ok) {
+        setSyncStatus('✓ Salvo no Sheets', '#10b981');
+        setTimeout(() => setSyncStatus('', ''), 3000);
+      } else throw new Error();
+    } catch { setSyncStatus('⚠ Sem conexão', '#ef4444'); }
+  }, 1500);
+}
 
 // ============ NAVIGATION ============
 function showPage(page) {
@@ -1274,9 +1324,11 @@ function exportarProjetos() {
 }
 
 // ============ INIT ============
-loadDB();
-renderDashboard();
-populateFiltros();
+(async () => {
+  await loadDB();
+  renderDashboard();
+  populateFiltros();
+})();
 </script>
 </body>
 </html>

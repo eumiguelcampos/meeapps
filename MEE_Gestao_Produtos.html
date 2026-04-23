@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MEE Technology — Gestão de Produtos</title>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #111118;
+    --bg3: #1a1a24;
+    --bg4: #22222f;
+    --border: #2a2a3a;
+    --border2: #3a3a50;
+    --accent: #00d4ff;
+    --accent2: #7c3aed;
+    --accent3: #10b981;
+    --danger: #ef4444;
+    --warn: #f59e0b;
+    --text: #f0f0f8;
+    --text2: #9090b0;
+    --text3: #5a5a78;
+    --card: #14141e;
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; font-size: 14px; min-height: 100vh; }
+
+  /* SIDEBAR */
+  .sidebar {
+    position: fixed; left: 0; top: 0; width: 220px; height: 100vh;
+    background: var(--bg2); border-right: 1px solid var(--border);
+    display: flex; flex-direction: column; z-index: 100;
+  }
+  .logo {
+    padding: 20px 18px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .logo-title { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; color: var(--accent); }
+  .logo-sub { font-size: 11px; color: var(--text3); margin-top: 2px; letter-spacing: 1px; text-transform: uppercase; }
+  .nav { padding: 12px 0; flex: 1; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 18px; cursor: pointer; color: var(--text2);
+    transition: all 0.15s; border-left: 3px solid transparent; font-size: 13px;
+  }
+  .nav-item:hover { background: var(--bg3); color: var(--text); }
+  .nav-item.active { background: var(--bg3); color: var(--accent); border-left-color: var(--accent); }
+  .nav-icon { width: 18px; text-align: center; font-size: 16px; }
+  .nav-sep { height: 1px; background: var(--border); margin: 8px 18px; }
+  .sidebar-footer { padding: 14px 18px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text3); }
+
+  /* MAIN */
+  .main { margin-left: 220px; min-height: 100vh; }
+  .topbar {
+    padding: 16px 28px; background: var(--bg2); border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 50;
+  }
+  .topbar h1 { font-size: 17px; font-weight: 600; flex: 1; }
+  .content { padding: 24px 28px; }
+
+  /* PAGES */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* BUTTONS */
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border2);
+    background: var(--bg3); color: var(--text); cursor: pointer; font-size: 13px;
+    transition: all 0.15s; font-family: inherit;
+  }
+  .btn:hover { background: var(--bg4); border-color: var(--border2); }
+  .btn-primary { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600; }
+  .btn-primary:hover { opacity: 0.9; }
+  .btn-danger { background: var(--danger); color: #fff; border-color: var(--danger); }
+  .btn-danger:hover { opacity: 0.9; }
+  .btn-sm { padding: 5px 10px; font-size: 12px; }
+  .btn-ghost { background: transparent; border-color: transparent; color: var(--text2); }
+  .btn-ghost:hover { background: var(--bg3); color: var(--text); border-color: transparent; }
+  .btn-success { background: var(--accent3); color: #000; border-color: var(--accent3); font-weight: 600; }
+
+  /* INPUTS */
+  input, select, textarea {
+    background: var(--bg3); border: 1px solid var(--border); color: var(--text);
+    border-radius: var(--radius-sm); padding: 8px 12px; font-size: 13px;
+    font-family: inherit; outline: none; width: 100%;
+    transition: border-color 0.15s;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+  input::placeholder { color: var(--text3); }
+  select option { background: var(--bg3); }
+  textarea { resize: vertical; min-height: 80px; }
+
+  /* CARDS */
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px;
+  }
+  .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .card-title { font-size: 14px; font-weight: 600; }
+
+  /* STATS ROW */
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+  .stat-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px;
+  }
+  .stat-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
+  .stat-value { font-size: 24px; font-weight: 700; }
+  .stat-value.accent { color: var(--accent); }
+  .stat-value.green { color: var(--accent3); }
+  .stat-value.warn { color: var(--warn); }
+
+  /* SEARCH BAR */
+  .search-bar { display: flex; gap: 10px; margin-bottom: 20px; align-items: center; }
+  .search-bar input { flex: 1; }
+
+  /* TABLE */
+  .table-wrap { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    background: var(--bg3); padding: 10px 14px; text-align: left;
+    font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase;
+    letter-spacing: 0.5px; border-bottom: 1px solid var(--border); white-space: nowrap;
+  }
+  td { padding: 11px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--bg3); }
+  .td-code { font-family: monospace; color: var(--accent); font-size: 12px; }
+  .td-linha {
+    font-size: 11px; padding: 3px 8px; border-radius: 20px; display: inline-block;
+    font-weight: 600; white-space: nowrap;
+  }
+  .linha-vision { background: #0d2a3a; color: #00bcd4; }
+  .linha-smart { background: #1a2a1a; color: #4caf50; }
+  .linha-keyless { background: #2a1a2a; color: #ce93d8; }
+  .linha-sentinel { background: #2a1a1a; color: #ff7043; }
+  .linha-sound { background: #1a1a2a; color: #7986cb; }
+
+  /* BADGES */
+  .badge { font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 600; }
+  .badge-ok { background: #0d2a1a; color: var(--accent3); }
+  .badge-low { background: #2a1a00; color: var(--warn); }
+  .badge-zero { background: #2a0d0d; color: var(--danger); }
+
+  /* PRODUCT IMAGE */
+  .prod-img {
+    width: 40px; height: 40px; border-radius: 6px; object-fit: cover;
+    background: var(--bg3); border: 1px solid var(--border); cursor: pointer;
+    display: flex; align-items: center; justify-content: center; font-size: 18px;
+  }
+  .prod-img img { width: 100%; height: 100%; object-fit: cover; border-radius: 5px; }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+    z-index: 1000; align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--bg2); border: 1px solid var(--border2); border-radius: 14px;
+    padding: 28px; width: 90%; max-width: 700px; max-height: 90vh;
+    overflow-y: auto; position: relative;
+  }
+  .modal-lg { max-width: 900px; }
+  .modal h2 { font-size: 18px; font-weight: 700; margin-bottom: 20px; }
+  .modal-close {
+    position: absolute; top: 16px; right: 16px;
+    background: var(--bg3); border: none; color: var(--text2); width: 30px; height: 30px;
+    border-radius: 50%; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center;
+  }
+  .modal-close:hover { color: var(--text); }
+
+  /* FORM GRID */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .form-grid.cols3 { grid-template-columns: 1fr 1fr 1fr; }
+  .form-full { grid-column: 1/-1; }
+  .form-group label { display: block; font-size: 12px; color: var(--text2); margin-bottom: 5px; font-weight: 500; }
+  .form-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); }
+
+  /* IMAGE UPLOAD */
+  .img-upload-area {
+    border: 2px dashed var(--border2); border-radius: var(--radius);
+    padding: 20px; text-align: center; cursor: pointer; transition: all 0.15s;
+    color: var(--text3);
+  }
+  .img-upload-area:hover { border-color: var(--accent); color: var(--accent); }
+  .img-upload-area.has-img { border-style: solid; border-color: var(--accent3); }
+  .img-preview { width: 100%; max-height: 180px; object-fit: contain; border-radius: var(--radius-sm); margin-bottom: 8px; }
+
+  /* TAGS */
+  .tag { font-size: 11px; padding: 3px 9px; border-radius: 20px; background: var(--bg4); color: var(--text2); display: inline-block; }
+
+  /* SHOPPING LIST */
+  .shop-item {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 14px 16px; display: flex; align-items: center; gap: 12px;
+    margin-bottom: 8px;
+  }
+  .shop-item-check { width: 20px; height: 20px; cursor: pointer; accent-color: var(--accent); }
+  .shop-item-info { flex: 1; }
+  .shop-item.checked .shop-item-info { opacity: 0.4; text-decoration: line-through; }
+  .shop-qty { display: flex; align-items: center; gap: 6px; }
+  .qty-btn { width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--border2); background: var(--bg3); color: var(--text); cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+  .qty-btn:hover { background: var(--bg4); }
+  .qty-num { min-width: 28px; text-align: center; font-weight: 600; }
+
+  /* PROJECT CARDS */
+  .proj-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+  .proj-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .proj-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .proj-card-name { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+  .proj-card-client { font-size: 13px; color: var(--text2); margin-bottom: 10px; }
+  .proj-card-meta { font-size: 12px; color: var(--text3); display: flex; gap: 12px; }
+  .proj-card-status { font-size: 11px; padding: 3px 8px; border-radius: 20px; font-weight: 600; margin-bottom: 10px; display: inline-block; }
+  .status-ativo { background: #0d2a1a; color: var(--accent3); }
+  .status-concluido { background: #1a1a2a; color: #7986cb; }
+  .status-orcamento { background: #2a1a00; color: var(--warn); }
+
+  /* PRODUCT SELECTOR */
+  .prod-selector-list { max-height: 300px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); }
+  .prod-selector-item {
+    display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+    border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.1s;
+  }
+  .prod-selector-item:last-child { border-bottom: none; }
+  .prod-selector-item:hover { background: var(--bg3); }
+  .prod-selector-item input[type="checkbox"] { accent-color: var(--accent); width: 16px; height: 16px; }
+
+  /* SELECTED PRODUCTS TABLE */
+  .selected-prods table { width: 100%; border-collapse: collapse; }
+  .selected-prods td { padding: 8px 10px; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .selected-prods td input { padding: 4px 8px; font-size: 13px; }
+
+  /* EMPTY STATE */
+  .empty { text-align: center; padding: 60px 20px; color: var(--text3); }
+  .empty-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.4; }
+  .empty p { font-size: 15px; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg2); }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+  /* TABS */
+  .tabs { display: flex; gap: 4px; margin-bottom: 20px; background: var(--bg2); padding: 4px; border-radius: var(--radius); width: fit-content; }
+  .tab { padding: 7px 16px; border-radius: var(--radius-sm); cursor: pointer; font-size: 13px; color: var(--text2); border: none; background: transparent; font-family: inherit; transition: all 0.15s; }
+  .tab.active { background: var(--bg4); color: var(--text); font-weight: 600; }
+  .tab:hover:not(.active) { color: var(--text); }
+
+  /* SECTION TITLE */
+  .section-title { font-size: 13px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px; }
+
+  /* NOTIFICATION */
+  .notif {
+    position: fixed; bottom: 24px; right: 24px; background: var(--accent3); color: #000;
+    padding: 12px 20px; border-radius: var(--radius); font-weight: 600; font-size: 13px;
+    z-index: 9999; transform: translateY(100px); transition: transform 0.3s; box-shadow: 0 4px 20px rgba(16,185,129,0.3);
+  }
+  .notif.error { background: var(--danger); color: #fff; }
+  .notif.show { transform: translateY(0); }
+
+  /* IMG MODAL */
+  .img-modal { max-width: 500px; text-align: center; }
+  .img-modal img { max-width: 100%; border-radius: var(--radius); }
+
+  .divider { height: 1px; background: var(--border); margin: 16px 0; }
+  .flex-row { display: flex; align-items: center; gap: 10px; }
+  .flex-1 { flex: 1; }
+  .text-sm { font-size: 12px; color: var(--text2); }
+  .mt8 { margin-top: 8px; }
+  .mt16 { margin-top: 16px; }
+  .fw600 { font-weight: 600; }
+  .color-accent { color: var(--accent); }
+  .color-green { color: var(--accent3); }
+  .color-warn { color: var(--warn); }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="logo">
+    <div class="logo-title">MEE TECH</div>
+    <div class="logo-sub">Gestão de Produtos</div>
+  </div>
+  <nav class="nav">
+    <div class="nav-item active" onclick="showPage('dashboard')">
+      <span class="nav-icon">📊</span> Dashboard
+    </div>
+    <div class="nav-item" onclick="showPage('produtos')">
+      <span class="nav-icon">📦</span> Produtos
+    </div>
+    <div class="nav-item" onclick="showPage('lista-compra')">
+      <span class="nav-icon">🛒</span> Lista de Compra
+    </div>
+    <div class="nav-sep"></div>
+    <div class="nav-item" onclick="showPage('projetos')">
+      <span class="nav-icon">🏗️</span> Projetos
+    </div>
+    <div class="nav-sep"></div>
+    <div class="nav-item" onclick="showPage('backup')">
+      <span class="nav-icon">💾</span> Backup / Export
+    </div>
+  </nav>
+  <div class="sidebar-footer">v1.0 · MEE Technology</div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- DASHBOARD -->
+  <div class="page active" id="page-dashboard">
+    <div class="topbar">
+      <h1>Dashboard</h1>
+    </div>
+    <div class="content">
+      <div class="stats-row" id="stats-row"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Produtos por Linha</div></div>
+          <div id="chart-linhas"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Últimos Projetos</div></div>
+          <div id="dash-projetos"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRODUTOS -->
+  <div class="page" id="page-produtos">
+    <div class="topbar">
+      <h1>Catálogo de Produtos</h1>
+      <button class="btn btn-primary" onclick="openProdModal()">+ Novo Produto</button>
+    </div>
+    <div class="content">
+      <div class="search-bar">
+        <input id="search-prod" placeholder="Buscar por nome, código, linha..." oninput="renderProdutos()">
+        <select id="filter-linha" onchange="renderProdutos()" style="width:180px">
+          <option value="">Todas as linhas</option>
+        </select>
+        <select id="filter-cat" onchange="renderProdutos()" style="width:160px">
+          <option value="">Todas categorias</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Foto</th>
+              <th>Código</th>
+              <th>Linha</th>
+              <th>Modelo</th>
+              <th>Descrição</th>
+              <th>Categoria</th>
+              <th>Valor</th>
+              <th>Custo</th>
+              <th>Estoque</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-produtos"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- LISTA DE COMPRA -->
+  <div class="page" id="page-lista-compra">
+    <div class="topbar">
+      <h1>Lista de Compra</h1>
+      <div style="display:flex;gap:8px">
+        <button class="btn" onclick="clearChecked()">Limpar marcados</button>
+        <button class="btn btn-primary" onclick="openAddShopModal()">+ Adicionar item</button>
+      </div>
+    </div>
+    <div class="content">
+      <div id="shop-list-container"></div>
+    </div>
+  </div>
+
+  <!-- PROJETOS -->
+  <div class="page" id="page-projetos">
+    <div class="topbar">
+      <h1>Projetos</h1>
+      <button class="btn btn-primary" onclick="openProjModal()">+ Novo Projeto</button>
+    </div>
+    <div class="content">
+      <div id="proj-grid-container"></div>
+    </div>
+  </div>
+
+  <!-- BACKUP -->
+  <div class="page" id="page-backup">
+    <div class="topbar">
+      <h1>Backup & Exportação</h1>
+    </div>
+    <div class="content">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:800px">
+        <div class="card">
+          <div class="card-title" style="margin-bottom:12px">💾 Backup Completo</div>
+          <p class="text-sm" style="margin-bottom:16px;line-height:1.6">Exporta todos os dados (produtos, projetos, lista de compra) em um arquivo JSON para backup ou restauração.</p>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <button class="btn btn-primary" onclick="exportarBackup()">⬇ Exportar Backup (.json)</button>
+            <label class="btn" style="cursor:pointer">
+              ⬆ Importar Backup (.json)
+              <input type="file" accept=".json" style="display:none" onchange="importarBackup(event)">
+            </label>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title" style="margin-bottom:12px">📊 Exportar Planilha</div>
+          <p class="text-sm" style="margin-bottom:16px;line-height:1.6">Exporta o catálogo de produtos como planilha CSV compatível com Excel.</p>
+          <button class="btn btn-success" onclick="exportarPlanilha()">⬇ Exportar .CSV (Excel)</button>
+        </div>
+        <div class="card">
+          <div class="card-title" style="margin-bottom:12px">🏗️ Exportar Projetos</div>
+          <p class="text-sm" style="margin-bottom:16px;line-height:1.6">Exporta todos os projetos com itens, quantidades e valores em formato CSV.</p>
+          <button class="btn btn-success" onclick="exportarProjetos()">⬇ Exportar Projetos (.csv)</button>
+        </div>
+        <div class="card">
+          <div class="card-title" style="margin-bottom:12px">ℹ️ Informações</div>
+          <div id="backup-info" class="text-sm" style="line-height:2"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL PRODUTO -->
+<div class="modal-overlay" id="modal-produto">
+  <div class="modal modal-lg">
+    <button class="modal-close" onclick="closeModal('modal-produto')">✕</button>
+    <h2 id="modal-prod-title">Novo Produto</h2>
+    <div style="display:grid;grid-template-columns:1fr 200px;gap:20px">
+      <div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Código do Produto</label>
+            <input id="f-codigo" placeholder="ex: VS-101">
+          </div>
+          <div class="form-group">
+            <label>Linha</label>
+            <select id="f-linha">
+              <option>MEE VISION</option><option>MEE SMART</option><option>MEE KEYLESS</option>
+              <option>MEE SENTINEL</option><option>MEE SOUND</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Modelo / Nome</label>
+            <input id="f-modelo" placeholder="ex: Orb Lite">
+          </div>
+          <div class="form-group">
+            <label>Categoria</label>
+            <input id="f-categoria" placeholder="ex: Sem Fio (Wi-Fi)">
+          </div>
+          <div class="form-group form-full">
+            <label>Descrição</label>
+            <textarea id="f-descricao" rows="2" placeholder="Descrição do produto..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>Fornecedor</label>
+            <input id="f-fornecedor" placeholder="ex: TP-link/Tapo">
+          </div>
+          <div class="form-group">
+            <label>Modelo Fornecedor</label>
+            <input id="f-modeloFornec" placeholder="ex: C200">
+          </div>
+          <div class="form-group">
+            <label>Origem</label>
+            <input id="f-origem" placeholder="ex: China">
+          </div>
+          <div class="form-group">
+            <label>Cor</label>
+            <input id="f-cor" placeholder="ex: Preto/Branco">
+          </div>
+          <div class="form-group">
+            <label>Custo (R$)</label>
+            <input id="f-custo" placeholder="0,00">
+          </div>
+          <div class="form-group">
+            <label>Valor de Venda (R$)</label>
+            <input id="f-valor" placeholder="0,00">
+          </div>
+          <div class="form-group">
+            <label>Lucro (R$)</label>
+            <input id="f-lucro" placeholder="0,00">
+          </div>
+          <div class="form-group">
+            <label>Valor Comodato (R$)</label>
+            <input id="f-valorComod" placeholder="0,00">
+          </div>
+          <div class="form-group">
+            <label>Estoque</label>
+            <input id="f-estoque" type="number" placeholder="0">
+          </div>
+          <div class="form-group form-full">
+            <label>Observações</label>
+            <textarea id="f-obs" rows="2" placeholder="Notas internas..."></textarea>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="form-group">
+          <label>Foto do Produto</label>
+          <div class="img-upload-area" id="img-upload-area" onclick="document.getElementById('f-imagem-input').click()">
+            <img class="img-preview" id="f-imagem-preview" style="display:none">
+            <div id="img-upload-placeholder">
+              <div style="font-size:32px;margin-bottom:6px">📷</div>
+              <div style="font-size:12px">Clique para adicionar foto</div>
+            </div>
+          </div>
+          <input type="file" id="f-imagem-input" accept="image/*" style="display:none" onchange="previewImagem(event)">
+          <button class="btn btn-ghost btn-sm" style="margin-top:6px;width:100%" onclick="removerImagem()">Remover foto</button>
+          <input type="hidden" id="f-imagem">
+        </div>
+        <div class="form-group mt16">
+          <label>ID interno</label>
+          <input id="f-id" style="display:none">
+        </div>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn" onclick="closeModal('modal-produto')">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarProduto()">Salvar Produto</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL VER PRODUTO -->
+<div class="modal-overlay" id="modal-ver-produto">
+  <div class="modal modal-lg">
+    <button class="modal-close" onclick="closeModal('modal-ver-produto')">✕</button>
+    <div id="modal-ver-content"></div>
+  </div>
+</div>
+
+<!-- MODAL ADICIONAR AO CARRINHO -->
+<div class="modal-overlay" id="modal-shop">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-shop')">✕</button>
+    <h2>Adicionar à Lista de Compra</h2>
+    <div class="form-group" style="margin-bottom:12px">
+      <label>Buscar produto</label>
+      <input id="shop-search" placeholder="Digite para buscar..." oninput="renderShopSelector()">
+    </div>
+    <div class="prod-selector-list" id="shop-selector"></div>
+    <div class="form-actions">
+      <button class="btn" onclick="closeModal('modal-shop')">Cancelar</button>
+      <button class="btn btn-primary" onclick="adicionarAoCarrinho()">Adicionar Selecionados</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PROJETO -->
+<div class="modal-overlay" id="modal-projeto">
+  <div class="modal modal-lg">
+    <button class="modal-close" onclick="closeModal('modal-projeto')">✕</button>
+    <h2 id="modal-proj-title">Novo Projeto</h2>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Nome do Projeto</label>
+        <input id="p-nome" placeholder="ex: Casa Cliente João">
+      </div>
+      <div class="form-group">
+        <label>Status</label>
+        <select id="p-status">
+          <option value="orcamento">Orçamento</option>
+          <option value="ativo">Ativo</option>
+          <option value="concluido">Concluído</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Cliente</label>
+        <input id="p-cliente" placeholder="Nome do cliente">
+      </div>
+      <div class="form-group">
+        <label>Telefone</label>
+        <input id="p-telefone" placeholder="(21) 99999-9999">
+      </div>
+      <div class="form-group form-full">
+        <label>Endereço / Local</label>
+        <input id="p-endereco" placeholder="Rua, número, bairro, cidade">
+      </div>
+      <div class="form-group form-full">
+        <label>Observações</label>
+        <textarea id="p-obs" rows="2" placeholder="Detalhes do projeto..."></textarea>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="section-title">Produtos do Projeto</div>
+    <div class="form-group" style="margin-bottom:10px">
+      <input id="proj-prod-search" placeholder="Buscar produto para adicionar..." oninput="renderProjSelector()">
+    </div>
+    <div class="prod-selector-list" id="proj-selector" style="max-height:200px"></div>
+    <div class="mt16" id="proj-selected-container"></div>
+    <input type="hidden" id="p-id">
+    <div class="form-actions">
+      <button class="btn" onclick="closeModal('modal-projeto')">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarProjeto()">Salvar Projeto</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL VER PROJETO -->
+<div class="modal-overlay" id="modal-ver-projeto">
+  <div class="modal modal-lg">
+    <button class="modal-close" onclick="closeModal('modal-ver-projeto')">✕</button>
+    <div id="modal-ver-proj-content"></div>
+  </div>
+</div>
+
+<!-- NOTIF -->
+<div class="notif" id="notif"></div>
+
+<script>
+// ============ DATA ============
+const INITIAL_PRODUCTS = [{"linha":"MEE SENTINEL","categoria":"Torre/Totten","modelo":"Sentinel Solo","codigo":"ST-101","fornecedor":"Mee","modeloFornec":"Sentinel Solo","origem":"Brasil","cor":"Alluminium","descricao":"Totem de chão com botão de pânico e interfone para 190","custo":"","valor":"6899.9","lucro":"","valorComod":"489.9","estoque":"10"},{"linha":"MEE SENTINEL","categoria":"Torre/Totten","modelo":"Sentinel Wall","codigo":"ST-102","fornecedor":"Mee","modeloFornec":"Sentinel Wall","origem":"Brasil","cor":"Alluminium","descricao":"Totem de parede para fixação em fachadas.","custo":"","valor":"1849.9","lucro":"","valorComod":"139.9","estoque":"10"},{"linha":"MEE VISION","categoria":"Com Fio (Coaxial)","modelo":"Vision Dome HD","codigo":"VS-101","fornecedor":"White Label","modeloFornec":"White Label","origem":"China","cor":"Branco","descricao":"Câmera de teto para ambiente interno/beiral FIXA (Coaxial)","custo":"","valor":"149.9","lucro":"","valorComod":"XX","estoque":"10"},{"linha":"MEE VISION","categoria":"Com Fio (Coaxial)","modelo":"Vision Bullet HD","codigo":"VS-102","fornecedor":"White Label","modeloFornec":"White Label","origem":"China","cor":"Branco","descricao":"Câmera parede/teto externa  FIXA (Coaxial)","custo":"","valor":"149.9","lucro":"","valorComod":"XX","estoque":"10"},{"linha":"MEE VISION","categoria":"Com Fio (RJ45)","modelo":"Vision Pro Dome (4K)","codigo":"VS-103","fornecedor":"White Label","modeloFornec":"White Label","origem":"China","cor":"Branco","descricao":"Câmera de teto interno/beiral FIXA (RJ45).","custo":"","valor":"","lucro":"","valorComod":"XX","estoque":"10"},{"linha":"MEE VISION","categoria":"Com Fio (RJ45)","modelo":"Vision Pro Bullet (4K)","codigo":"VS-104","fornecedor":"White Label","modeloFornec":"White Label","origem":"China","cor":"Branco","descricao":"Câmera parede/teto externa FIXA (RJ45).","custo":"","valor":"","lucro":"","valorComod":"XX","estoque":"10"},{"linha":"MEE VISION","categoria":"Sem Fio (Wi-Fi)","modelo":"Orb Lite","codigo":"VS-105","fornecedor":"TP-link/Mercusys","modeloFornec":"MC219","origem":"China","cor":"Branco","descricao":"Câmera Robô / Interna / 360° /2K","custo":"139.9","valor":"239.9","lucro":"99.9","valorComod":"XX","estoque":"10"},{"linha":"MEE VISION","categoria":"Sem Fio (Wi-Fi)","modelo":"Orb FullHD","codigo":"VS-106","fornecedor":"TP-link/Tapo","modeloFornec":"C200","origem":"China","cor":"Branco","descricao":"Câmera Robô / Interna / 360°","custo":"229.9","valor":"329.9","lucro":"99.9","valorComod":"XX","estoque":"10"},{"linha":"MEE VISION","categoria":"Sem Fio (Wi-Fi)","modelo":"Orb FullHD IP65","codigo":"VS-107","fornecedor":"TP-link/Tapo","modeloFornec":"C500","origem":"China","cor":"Branco","descricao":"Câmera Robô / Externa / 360°","custo":"299.9","valor":"379.9","lucro":"119.9","valorComod":"XX","estoque":"10"},{"linha":"MEE VISION","categoria":"Sem Fio (Wi-Fi)","modelo":"Eye HD","codigo":"VS-108","fornecedor":"TP-link/Tapo","modeloFornec":"TC60","origem":"China","cor":"Preto/Branco","descricao":"Câmera Interna / Fixa / Wi-fi","custo":"149.9","valor":"249.9","lucro":"99.9","valorComod":"XX","estoque":"10"},{"linha":"MEE VISION","categoria":"Sem Fio (Wi-Fi)","modelo":"Eye Full HD","codigo":"VS-109","fornecedor":"TP-link/Tapo","modeloFornec":"C100","origem":"China","cor":"Preto/Branco","descricao":"Câmera Interna / Fixa / Wi-fi","custo":"149.9","valor":"249.9","lucro":"99.9","valorComod":"XX","estoque":"10"},{"linha":"MEE VISION","categoria":"Sem Fio (Wi-Fi)","modelo":"Eye 2k","codigo":"VS-110","fornecedor":"TP-link/Tapo","modeloFornec":"C113","origem":"China","cor":"Preto/Branco","descricao":"Câmera interna / Fixa / Wi-fi / 2K","custo":"179.9","valor":"279.9","lucro":"99.9","valorComod":"XX","estoque":"10"},{"linha":"MEE VISION","categoria":"Sem Fio (Wi-Fi)","modelo":"Hórus 2k","codigo":"VS-111","fornecedor":"TP-link/Tapo","modeloFornec":"C320WS","origem":"China","cor":"Preto/Branco","descricao":"Câmera Interna / Fixa / Wi-fi / 2K","custo":"179.9","valor":"279.9","lucro":"99.9","valorComod":"XX","estoque":"10"},{"linha":"MEE VISION","categoria":"Sem Fio (Wi-Fi)","modelo":"Hórus FullHD","codigo":"VS-112","fornecedor":"TP-link/Tapo","modeloFornec":"C206","origem":"China","cor":"Preto/Branco","descricao":"Câmera interna / Fixa / Wi-fi","custo":"179.9","valor":"279.9","lucro":"99.9","valorComod":"XX","estoque":"10"},{"linha":"MEE VISION","categoria":"Sem Fio (Wi-Fi)","modelo":"Solis 2k","codigo":"VS-113","fornecedor":"Ekaza","modeloFornec":"EKRW-T5294","origem":"China","cor":"Preto/Branco","descricao":"Câmera interna / Fixa / Wi-fi / Solar / 2K","custo":"179.9","valor":"279.9","lucro":"99.9","valorComod":"XX","estoque":"10"},{"linha":"MEE VISION","categoria":"Sem Fio (Wi-Fi/RJ45)","modelo":"Defender","codigo":"VS-114","fornecedor":"White Label","modeloFornec":"Tripla ICSEE","origem":"China","cor":"Preto e Cinza","descricao":"Câmera Robô / Externa / 360° /  Wi-Fi  / 3 lentes","custo":"199.9","valor":"299.9","lucro":"99.9","valorComod":"XX","estoque":"10"},{"linha":"MEE VISION","categoria":"DVR","modelo":"Core","codigo":"VS-115","fornecedor":"AiTek","modeloFornec":"Sigma D416BP","origem":"China","cor":"Preto","descricao":"DVR Inteligente, com conexão com celular, de 4 a 16 câmeras","custo":"R$ 270 ~ R$ 499","valor":"R$ 390 ~ R$948","lucro":"R$ 120 ~ R$ 448","valorComod":"XX","estoque":"10"},{"linha":"MEE KEYLESS","categoria":"Acesso","modelo":"Keyless Fit","codigo":"KL-101","fornecedor":"White Label","modeloFornec":"Tuya","origem":"China","cor":"Preto/Branco","descricao":"Fechadura de Sobrepor","custo":"","valor":"","lucro":"","valorComod":"XX","estoque":"10"},{"linha":"MEE KEYLESS","categoria":"Acesso","modelo":"Keyless Fit Wi-fi","codigo":"KL-102","fornecedor":"White Label","modeloFornec":"Tuya","origem":"China","cor":"Preto/Branco","descricao":"Fechadura de Sobrepor com App e Wi-fi","custo":"","valor":"","lucro":"","valorComod":"XX","estoque":"10"},{"linha":"MEE KEYLESS","categoria":"Acesso","modelo":"Keyless Pro","codigo":"KL-103","fornecedor":"White Label","modeloFornec":"Tuya","origem":"China","cor":"Preto/Branco","descricao":"Fechadura de Embutir Premium","custo":"","valor":"","lucro":"","valorComod":"XX","estoque":"10"},{"linha":"MEE KEYLESS","categoria":"Acesso","modelo":"Keyless Slim","codigo":"KL-104","fornecedor":"White Label","modeloFornec":"Tuya","origem":"China","cor":"Preto/Branco","descricao":"Fechadura para perfis finos (Alumínio).","custo":"","valor":"","lucro":"","valorComod":"XX","estoque":"10"},{"linha":"MEE SMART","categoria":"Energia","modelo":"Smart Switch 4x2","codigo":"SM-101","fornecedor":"White Label","modeloFornec":"Tuya","origem":"China","cor":"Preto/Branco","descricao":"Interruptor Touch Wi-Fi (Vidro) - 1 a 3 botões.","custo":"","valor":"","lucro":"","valorComod":"XX","estoque":"10"},{"linha":"MEE SMART","categoria":"Energia","modelo":"Smart Switch 4x4","codigo":"SM-102","fornecedor":"White Label","modeloFornec":"Tuya","origem":"China","cor":"Preto/Branco","descricao":"Interruptor Touch Wi-Fi (Vidro) - 4 a 6 botões.","custo":"","valor":"","lucro":"","valorComod":"XX","estoque":"10"},{"linha":"MEE SMART","categoria":"Energia","modelo":"Smart Plug (Single)","codigo":"SM-103","fornecedor":"White Label","modeloFornec":"Tuya","origem":"China","cor":"Branco","descricao":"Tomada Inteligente individual (10A/20A).","custo":"","valor":"59.9","lucro":"","valorComod":"XX","estoque":"10"},{"linha":"MEE SMART","categoria":"Energia","modelo":"Smart Switch Outlet 4x2","codigo":"SM-104","fornecedor":"White Label","modeloFornec":"Tuya","origem":"China","cor":"Preto/Branco","descricao":"Placa de parede inteligente com 1 interruptor e 1 tomada","custo":"","valor":"","lucro":"","valorComod":"XX","estoque":"10"},{"linha":"MEE SMART","categoria":"Energia","modelo":"Smart Outlet Wall 4x4","codigo":"SM-105","fornecedor":"White Label","modeloFornec":"Tuya","origem":"China","cor":"Preto/Branco","descricao":"Placa de parede inteligente com 1 ou 2 tomadas","custo":"","valor":"","lucro":"","valorComod":"XX","estoque":"10"},{"linha":"MEE SMART","categoria":"Energia","modelo":"Smart Switch Outlet 4x4","codigo":"SM-106","fornecedor":"White Label","modeloFornec":"Tuya","origem":"China","cor":"Preto/Branco","descricao":"Placa de parede Inteligente com 4 interruptores e 2 tomadas","custo":"","valor":"","lucro":"","valorComod":"XX","estoque":"10"},{"linha":"MEE SMART","categoria":"Iluminação","modelo":"Smart Bub","codigo":"SM-107","fornecedor":"White Label","modeloFornec":"Tuya","origem":"China","cor":"Branco","descricao":"Lâmpada LED RGB","custo":"29.9","valor":"59.9","lucro":"29.9","valorComod":"XX","estoque":"10"},{"linha":"MEE SMART","categoria":"Iluminação","modelo":"Smart LED Strip","codigo":"SM-108","fornecedor":"White Label","modeloFornec":"Tuya","origem":"China","cor":"RGB","descricao":"Fita de LED Wi-Fi (Rolo 5m) para sancas.","custo":"74.9","valor":"119.9","lucro":"44.9","valorComod":"XX","estoque":"10"},{"linha":"MEE SMART","categoria":"Conforto","modelo":"Smart IR Control","codigo":"SM-109","fornecedor":"White Label","modeloFornec":"Tuya","origem":"China","cor":"Preto","descricao":"Controle Remoto Universal (Ar/TV/Som).","custo":"49.9","valor":"99.9","lucro":"49.49","valorComod":"XX","estoque":"10"},{"linha":"MEE SMART","categoria":"Central Controle","modelo":"Control Station 7\"","codigo":"SM-110","fornecedor":"Multi","modeloFornec":"M7","origem":"Brasil","cor":"Preto/Branco","descricao":"Tablet de parede 7\" (Painel de comando do ecossistema)","custo":"454","valor":"890.9","lucro":"436","valorComod":"XX","estoque":"10"},{"linha":"MEE SMART","categoria":"Central Controle","modelo":"Control Station 10\"","codigo":"SM-111","fornecedor":"Multi","modeloFornec":"M10","origem":"Brasil","cor":"Preto/Branco","descricao":"Tablet de parede 10\" (Painel central de comando do ecossistema)","custo":"722","valor":"1499.9","lucro":"699.9","valorComod":"XX","estoque":"10"},{"linha":"MEE SOUND","categoria":"Amplificador","modelo":"Amplifier 450","codigo":"SD-101","fornecedor":"White Label","modeloFornec":"Ak55","origem":"China","cor":"Preto","descricao":"Central de som Ambiente 450W c/ Bluetooth e microfone","custo":"188","valor":"399.9","lucro":"212","valorComod":"XX","estoque":"10"},{"linha":"MEE SOUND","categoria":"Amplificador","modelo":"Amplifier 1000","codigo":"SD-102","fornecedor":"LeLong","modeloFornec":"714","origem":"China","cor":"Preto","descricao":"Central de som Home Theater 5.1 1000W","custo":"699","valor":"1399","lucro":"699","valorComod":"XX","estoque":"10"},{"linha":"MEE SOUND","categoria":"Caixas","modelo":"Wave Speaker","codigo":"SD-103","fornecedor":"Bomber","modeloFornec":"Permak","origem":"Brasil","cor":"Branco/Preto","descricao":"Arandela de embutir 6\"","custo":"79.9","valor":"119","lucro":"39.9","valorComod":"XX","estoque":"10"},{"linha":"MEE SOUND","categoria":"Caixas","modelo":"Wave Box","codigo":"SD-104","fornecedor":"LeSon","modeloFornec":"2LSA74CXP","origem":"Brasil","cor":"Preto/Branco","descricao":"Caixa de Som de sobrepor","custo":"75","valor":"149.9","lucro":"75","valorComod":"XX","estoque":"10"},{"linha":"MEE SOUND","categoria":"Caixas","modelo":"Wave Sub","codigo":"SD-105","fornecedor":"Exclusive","modeloFornec":"Mini Slim 200w","origem":"Brasil","cor":"Preto","descricao":"Subwoofer ativo Automotivo de chão 200W 8\"","custo":"373","valor":"899.9","lucro":"477","valorComod":"XX","estoque":"10"},{"linha":"MEE SOUND","categoria":"Caixas","modelo":"Wave Sub Premium","codigo":"SD-106","fornecedor":"Frahm","modeloFornec":"Rd SW Slim","origem":"Brasil","cor":"Preto","descricao":"Subwoofer ativo Residencial de chão 200W 8\"","custo":"1616","valor":"1999.9","lucro":"384","valorComod":"XX","estoque":"10"}];
+
+// ============ STATE ============
+let db = {
+  products: [],
+  shopList: [],
+  projects: []
+};
+
+function loadDB() {
+  const saved = localStorage.getItem('mee_db');
+  if (saved) {
+    db = JSON.parse(saved);
+  } else {
+    db.products = INITIAL_PRODUCTS.map((p, i) => ({ ...p, id: 'p' + i, imagem: '', obs: '' }));
+  }
+}
+function saveDB() { localStorage.setItem('mee_db', JSON.stringify(db)); }
+
+// ============ NAVIGATION ============
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  const navItems = document.querySelectorAll('.nav-item');
+  const pages = ['dashboard','produtos','lista-compra','','projetos','','backup'];
+  navItems.forEach((item, i) => {
+    if (pages[i] === page) item.classList.add('active');
+  });
+  if (page === 'dashboard') renderDashboard();
+  if (page === 'produtos') { populateFiltros(); renderProdutos(); }
+  if (page === 'lista-compra') renderShopList();
+  if (page === 'projetos') renderProjetos();
+  if (page === 'backup') renderBackupInfo();
+}
+
+// ============ UTILS ============
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+function fmtVal(v) {
+  const n = parseFloat(v);
+  if (isNaN(n)) return v || '—';
+  return 'R$ ' + n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+function linhaClass(l) {
+  const m = { 'MEE VISION': 'linha-vision', 'MEE SMART': 'linha-smart', 'MEE KEYLESS': 'linha-keyless', 'MEE SENTINEL': 'linha-sentinel', 'MEE SOUND': 'linha-sound' };
+  return m[l] || 'linha-vision';
+}
+function estoqueClass(e) {
+  const n = parseInt(e);
+  if (isNaN(n)) return 'badge-ok';
+  if (n === 0) return 'badge-zero';
+  if (n <= 3) return 'badge-low';
+  return 'badge-ok';
+}
+function notif(msg, err = false) {
+  const el = document.getElementById('notif');
+  el.textContent = msg;
+  el.className = 'notif' + (err ? ' error' : '') + ' show';
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+
+// Close modal on overlay click
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
+});
+
+// ============ DASHBOARD ============
+function renderDashboard() {
+  const prods = db.products;
+  const projs = db.projects;
+  const totalProd = prods.length;
+  const totalProj = projs.length;
+  const estoqueTotal = prods.reduce((a, p) => a + (parseInt(p.estoque) || 0), 0);
+  const projAtivos = projs.filter(p => p.status === 'ativo').length;
+
+  document.getElementById('stats-row').innerHTML = `
+    <div class="stat-card"><div class="stat-label">Total de Produtos</div><div class="stat-value accent">${totalProd}</div></div>
+    <div class="stat-card"><div class="stat-label">Itens em Estoque</div><div class="stat-value green">${estoqueTotal}</div></div>
+    <div class="stat-card"><div class="stat-label">Projetos Totais</div><div class="stat-value">${totalProj}</div></div>
+    <div class="stat-card"><div class="stat-label">Projetos Ativos</div><div class="stat-value warn">${projAtivos}</div></div>
+  `;
+
+  // Linhas chart
+  const linhas = {};
+  prods.forEach(p => { linhas[p.linha] = (linhas[p.linha] || 0) + 1; });
+  const maxQ = Math.max(...Object.values(linhas));
+  const colors = { 'MEE VISION': '#00bcd4', 'MEE SMART': '#4caf50', 'MEE KEYLESS': '#ce93d8', 'MEE SENTINEL': '#ff7043', 'MEE SOUND': '#7986cb' };
+  document.getElementById('chart-linhas').innerHTML = Object.entries(linhas).map(([l, q]) => `
+    <div style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
+        <span style="color:${colors[l]||'#aaa'}">${l}</span><span style="color:var(--text2)">${q} produtos</span>
+      </div>
+      <div style="background:var(--bg4);border-radius:4px;height:8px">
+        <div style="background:${colors[l]||'#aaa'};width:${Math.round(q/maxQ*100)}%;height:8px;border-radius:4px;transition:width 0.5s"></div>
+      </div>
+    </div>
+  `).join('');
+
+  // Últimos projetos
+  const lastProjs = [...projs].slice(-5).reverse();
+  document.getElementById('dash-projetos').innerHTML = lastProjs.length ? lastProjs.map(p => `
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
+      <div class="proj-card-status status-${p.status}" style="margin-bottom:0">${p.status}</div>
+      <div style="flex:1"><div style="font-weight:600;font-size:13px">${p.nome}</div><div class="text-sm">${p.cliente||'—'}</div></div>
+      <button class="btn btn-sm btn-ghost" onclick="verProjeto('${p.id}')">Ver</button>
+    </div>
+  `).join('') : '<div class="empty"><div class="empty-icon">🏗️</div><p>Nenhum projeto ainda</p></div>';
+}
+
+// ============ PRODUTOS ============
+function populateFiltros() {
+  const linhas = [...new Set(db.products.map(p => p.linha))];
+  const cats = [...new Set(db.products.map(p => p.categoria.trim()))];
+  const fLinha = document.getElementById('filter-linha');
+  const fCat = document.getElementById('filter-cat');
+  fLinha.innerHTML = '<option value="">Todas as linhas</option>' + linhas.map(l => `<option>${l}</option>`).join('');
+  fCat.innerHTML = '<option value="">Todas categorias</option>' + cats.map(c => `<option>${c}</option>`).join('');
+}
+
+function renderProdutos() {
+  const q = document.getElementById('search-prod').value.toLowerCase();
+  const fl = document.getElementById('filter-linha').value;
+  const fc = document.getElementById('filter-cat').value;
+  let prods = db.products.filter(p => {
+    const match = !q || [p.modelo, p.codigo, p.linha, p.categoria, p.descricao, p.fornecedor].some(v => v.toLowerCase().includes(q));
+    const ml = !fl || p.linha === fl;
+    const mc = !fc || p.categoria.trim() === fc;
+    return match && ml && mc;
+  });
+
+  const tbody = document.getElementById('tbody-produtos');
+  if (!prods.length) {
+    tbody.innerHTML = '<tr><td colspan="10"><div class="empty"><div class="empty-icon">📦</div><p>Nenhum produto encontrado</p></div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = prods.map(p => `
+    <tr>
+      <td>
+        <div class="prod-img" onclick="verImagem('${p.id}')">
+          ${p.imagem ? `<img src="${p.imagem}" alt="">` : '📷'}
+        </div>
+      </td>
+      <td><span class="td-code">${p.codigo}</span></td>
+      <td><span class="td-linha ${linhaClass(p.linha)}">${p.linha}</span></td>
+      <td style="font-weight:600">${p.modelo}</td>
+      <td style="max-width:220px;font-size:12px;color:var(--text2)">${p.descricao}</td>
+      <td><span class="tag">${p.categoria.trim()}</span></td>
+      <td style="white-space:nowrap">${fmtVal(p.valor)}</td>
+      <td style="white-space:nowrap">${fmtVal(p.custo)}</td>
+      <td><span class="badge ${estoqueClass(p.estoque)}">${p.estoque || '—'}</span></td>
+      <td>
+        <div style="display:flex;gap:4px">
+          <button class="btn btn-sm btn-ghost" onclick="verProduto('${p.id}')">👁</button>
+          <button class="btn btn-sm btn-ghost" onclick="editarProduto('${p.id}')">✏️</button>
+          <button class="btn btn-sm btn-ghost" onclick="excluirProduto('${p.id}')" style="color:var(--danger)">🗑</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function openProdModal(id) {
+  const f = (id) => { /* no-op */ };
+  document.getElementById('modal-prod-title').textContent = 'Novo Produto';
+  ['codigo','linha','modelo','categoria','descricao','fornecedor','modeloFornec','origem','cor','custo','valor','lucro','valorComod','estoque','obs','id'].forEach(k => {
+    const el = document.getElementById('f-' + k);
+    if (el) el.value = '';
+  });
+  document.getElementById('f-imagem').value = '';
+  document.getElementById('f-imagem-preview').style.display = 'none';
+  document.getElementById('img-upload-placeholder').style.display = '';
+  document.getElementById('img-upload-area').classList.remove('has-img');
+  openModal('modal-produto');
+}
+
+function editarProduto(id) {
+  const p = db.products.find(x => x.id === id);
+  if (!p) return;
+  document.getElementById('modal-prod-title').textContent = 'Editar Produto';
+  ['codigo','modelo','categoria','descricao','fornecedor','modeloFornec','origem','cor','custo','valor','lucro','valorComod','estoque','obs'].forEach(k => {
+    const el = document.getElementById('f-' + k);
+    if (el) el.value = p[k] || '';
+  });
+  document.getElementById('f-linha').value = p.linha;
+  document.getElementById('f-id').value = id;
+  if (p.imagem) {
+    document.getElementById('f-imagem').value = p.imagem;
+    document.getElementById('f-imagem-preview').src = p.imagem;
+    document.getElementById('f-imagem-preview').style.display = 'block';
+    document.getElementById('img-upload-placeholder').style.display = 'none';
+    document.getElementById('img-upload-area').classList.add('has-img');
+  } else {
+    document.getElementById('f-imagem').value = '';
+    document.getElementById('f-imagem-preview').style.display = 'none';
+    document.getElementById('img-upload-placeholder').style.display = '';
+    document.getElementById('img-upload-area').classList.remove('has-img');
+  }
+  openModal('modal-produto');
+}
+
+function salvarProduto() {
+  const id = document.getElementById('f-id').value;
+  const prod = {
+    id: id || uid(),
+    linha: document.getElementById('f-linha').value,
+    codigo: document.getElementById('f-codigo').value.trim(),
+    modelo: document.getElementById('f-modelo').value.trim(),
+    categoria: document.getElementById('f-categoria').value.trim(),
+    descricao: document.getElementById('f-descricao').value.trim(),
+    fornecedor: document.getElementById('f-fornecedor').value.trim(),
+    modeloFornec: document.getElementById('f-modeloFornec').value.trim(),
+    origem: document.getElementById('f-origem').value.trim(),
+    cor: document.getElementById('f-cor').value.trim(),
+    custo: document.getElementById('f-custo').value.trim(),
+    valor: document.getElementById('f-valor').value.trim(),
+    lucro: document.getElementById('f-lucro').value.trim(),
+    valorComod: document.getElementById('f-valorComod').value.trim(),
+    estoque: document.getElementById('f-estoque').value.trim(),
+    obs: document.getElementById('f-obs').value.trim(),
+    imagem: document.getElementById('f-imagem').value,
+  };
+  if (!prod.modelo) { notif('Informe o nome do produto', true); return; }
+  if (id) {
+    const idx = db.products.findIndex(x => x.id === id);
+    if (idx >= 0) db.products[idx] = prod;
+  } else {
+    db.products.push(prod);
+  }
+  saveDB();
+  closeModal('modal-produto');
+  renderProdutos();
+  populateFiltros();
+  notif('Produto salvo com sucesso!');
+}
+
+function excluirProduto(id) {
+  if (!confirm('Excluir este produto?')) return;
+  db.products = db.products.filter(p => p.id !== id);
+  saveDB();
+  renderProdutos();
+  notif('Produto excluído');
+}
+
+function verProduto(id) {
+  const p = db.products.find(x => x.id === id);
+  if (!p) return;
+  const rows = [
+    ['Código', p.codigo], ['Linha', p.linha], ['Categoria', p.categoria], ['Fornecedor', p.fornecedor],
+    ['Modelo Fornecedor', p.modeloFornec], ['Origem', p.origem], ['Cor', p.cor],
+    ['Custo', fmtVal(p.custo)], ['Valor de Venda', fmtVal(p.valor)], ['Lucro', fmtVal(p.lucro)],
+    ['Valor Comodato', fmtVal(p.valorComod)], ['Estoque', p.estoque || '—'], ['Observações', p.obs || '—']
+  ].map(([k, v]) => `<tr><td style="color:var(--text2);padding:8px 0;font-size:13px;width:140px">${k}</td><td style="padding:8px 0;font-size:13px;font-weight:500">${v}</td></tr>`).join('');
+  document.getElementById('modal-ver-content').innerHTML = `
+    <div style="display:flex;gap:20px;align-items:flex-start;margin-bottom:16px">
+      ${p.imagem ? `<img src="${p.imagem}" style="width:120px;height:120px;object-fit:cover;border-radius:10px;border:1px solid var(--border)">` : '<div style="width:120px;height:120px;background:var(--bg3);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:40px">📦</div>'}
+      <div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:4px">${p.codigo}</div>
+        <h2 style="font-size:22px;font-weight:700;margin-bottom:6px">${p.modelo}</h2>
+        <p style="color:var(--text2);font-size:14px;line-height:1.5">${p.descricao}</p>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <table>${rows}</table>
+    <div class="form-actions" style="margin-top:16px">
+      <button class="btn" onclick="closeModal('modal-ver-produto')">Fechar</button>
+      <button class="btn btn-primary" onclick="closeModal('modal-ver-produto');editarProduto('${id}')">Editar</button>
+    </div>
+  `;
+  openModal('modal-ver-produto');
+}
+
+function verImagem(id) {
+  const p = db.products.find(x => x.id === id);
+  if (!p || !p.imagem) { verProduto(id); return; }
+  verProduto(id);
+}
+
+function previewImagem(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const src = ev.target.result;
+    document.getElementById('f-imagem').value = src;
+    document.getElementById('f-imagem-preview').src = src;
+    document.getElementById('f-imagem-preview').style.display = 'block';
+    document.getElementById('img-upload-placeholder').style.display = 'none';
+    document.getElementById('img-upload-area').classList.add('has-img');
+  };
+  reader.readAsDataURL(file);
+}
+function removerImagem() {
+  document.getElementById('f-imagem').value = '';
+  document.getElementById('f-imagem-preview').style.display = 'none';
+  document.getElementById('img-upload-placeholder').style.display = '';
+  document.getElementById('img-upload-area').classList.remove('has-img');
+  document.getElementById('f-imagem-input').value = '';
+}
+
+// ============ LISTA DE COMPRA ============
+function renderShopList() {
+  const list = db.shopList;
+  const cont = document.getElementById('shop-list-container');
+  if (!list.length) {
+    cont.innerHTML = '<div class="empty"><div class="empty-icon">🛒</div><p>Lista vazia. Adicione produtos acima.</p></div>';
+    return;
+  }
+  const totalItems = list.reduce((a, i) => a + i.qty, 0);
+  const checked = list.filter(i => i.checked).length;
+  cont.innerHTML = `
+    <div class="flex-row" style="margin-bottom:16px">
+      <span class="text-sm">${list.length} itens · ${totalItems} unidades · ${checked} marcados</span>
+    </div>
+    ${list.map(item => {
+      const p = db.products.find(x => x.id === item.prodId);
+      return `
+      <div class="shop-item ${item.checked ? 'checked' : ''}" id="si-${item.id}">
+        <input type="checkbox" class="shop-item-check" ${item.checked ? 'checked' : ''} onchange="toggleShopItem('${item.id}')">
+        <div class="shop-item-info">
+          <div style="font-weight:600;font-size:13px">${item.nome}</div>
+          <div class="text-sm">${p ? p.linha + ' · ' + p.categoria : ''}</div>
+        </div>
+        <div class="shop-qty">
+          <button class="qty-btn" onclick="changeQty('${item.id}',-1)">−</button>
+          <span class="qty-num">${item.qty}</span>
+          <button class="qty-btn" onclick="changeQty('${item.id}',1)">+</button>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="removeShopItem('${item.id}')" style="color:var(--danger)">✕</button>
+      </div>
+    `}).join('')}
+  `;
+}
+
+function openAddShopModal() {
+  document.getElementById('shop-search').value = '';
+  document.querySelectorAll('#shop-selector input[type=checkbox]').forEach(c => c.checked = false);
+  renderShopSelector();
+  openModal('modal-shop');
+}
+
+function renderShopSelector() {
+  const q = document.getElementById('shop-search').value.toLowerCase();
+  const prods = db.products.filter(p => !q || p.modelo.toLowerCase().includes(q) || p.codigo.toLowerCase().includes(q));
+  document.getElementById('shop-selector').innerHTML = prods.map(p => `
+    <div class="prod-selector-item">
+      <input type="checkbox" value="${p.id}" id="sc-${p.id}">
+      <label for="sc-${p.id}" style="flex:1;cursor:pointer">
+        <span style="font-weight:600">${p.modelo}</span>
+        <span class="text-sm" style="margin-left:8px">${p.codigo}</span>
+      </label>
+      <span class="tag">${p.linha}</span>
+    </div>
+  `).join('') || '<div style="padding:20px;text-align:center;color:var(--text3)">Nenhum produto</div>';
+}
+
+function adicionarAoCarrinho() {
+  const checked = document.querySelectorAll('#shop-selector input[type=checkbox]:checked');
+  if (!checked.length) { notif('Selecione pelo menos um produto', true); return; }
+  checked.forEach(c => {
+    const p = db.products.find(x => x.id === c.value);
+    if (!p) return;
+    const exists = db.shopList.find(i => i.prodId === p.id);
+    if (exists) { exists.qty++; }
+    else { db.shopList.push({ id: uid(), prodId: p.id, nome: p.modelo, qty: 1, checked: false }); }
+  });
+  saveDB();
+  closeModal('modal-shop');
+  renderShopList();
+  notif('Adicionado à lista!');
+}
+
+function toggleShopItem(id) {
+  const item = db.shopList.find(i => i.id === id);
+  if (item) { item.checked = !item.checked; saveDB(); renderShopList(); }
+}
+function changeQty(id, delta) {
+  const item = db.shopList.find(i => i.id === id);
+  if (item) {
+    item.qty = Math.max(1, item.qty + delta);
+    saveDB(); renderShopList();
+  }
+}
+function removeShopItem(id) { db.shopList = db.shopList.filter(i => i.id !== id); saveDB(); renderShopList(); }
+function clearChecked() { db.shopList = db.shopList.filter(i => !i.checked); saveDB(); renderShopList(); notif('Itens marcados removidos'); }
+
+// ============ PROJETOS ============
+let projProdsSelecionados = {};
+
+function renderProjetos() {
+  const cont = document.getElementById('proj-grid-container');
+  if (!db.projects.length) {
+    cont.innerHTML = '<div class="empty"><div class="empty-icon">🏗️</div><p>Nenhum projeto criado ainda.</p></div>';
+    return;
+  }
+  cont.innerHTML = `<div class="proj-grid">${db.projects.map(p => `
+    <div class="proj-card" onclick="verProjeto('${p.id}')">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <span class="proj-card-status status-${p.status}">${p.status}</span>
+        <div style="display:flex;gap:4px" onclick="event.stopPropagation()">
+          <button class="btn btn-sm btn-ghost" onclick="editarProjeto('${p.id}')">✏️</button>
+          <button class="btn btn-sm btn-ghost" onclick="excluirProjeto('${p.id}')" style="color:var(--danger)">🗑</button>
+        </div>
+      </div>
+      <div class="proj-card-name">${p.nome}</div>
+      <div class="proj-card-client">${p.cliente || 'Cliente não informado'}</div>
+      <div class="proj-card-meta">
+        <span>📍 ${p.endereco || '—'}</span>
+        <span>📦 ${p.itens ? p.itens.length : 0} itens</span>
+      </div>
+    </div>
+  `).join('')}</div>`;
+}
+
+function openProjModal() {
+  projProdsSelecionados = {};
+  ['nome','cliente','telefone','endereco','obs','id'].forEach(k => { const e = document.getElementById('p-' + k); if (e) e.value = ''; });
+  document.getElementById('p-status').value = 'orcamento';
+  document.getElementById('modal-proj-title').textContent = 'Novo Projeto';
+  document.getElementById('proj-prod-search').value = '';
+  renderProjSelector();
+  renderProjSelectedTable();
+  openModal('modal-projeto');
+}
+
+function editarProjeto(id) {
+  const p = db.projects.find(x => x.id === id);
+  if (!p) return;
+  projProdsSelecionados = {};
+  (p.itens || []).forEach(i => { projProdsSelecionados[i.prodId] = { qty: i.qty, obs: i.obs || '' }; });
+  ['nome','cliente','telefone','endereco','obs'].forEach(k => {
+    const e = document.getElementById('p-' + k); if (e) e.value = p[k] || '';
+  });
+  document.getElementById('p-id').value = id;
+  document.getElementById('p-status').value = p.status || 'orcamento';
+  document.getElementById('modal-proj-title').textContent = 'Editar Projeto';
+  document.getElementById('proj-prod-search').value = '';
+  renderProjSelector();
+  renderProjSelectedTable();
+  openModal('modal-projeto');
+}
+
+function renderProjSelector() {
+  const q = document.getElementById('proj-prod-search').value.toLowerCase();
+  const prods = db.products.filter(p => !q || p.modelo.toLowerCase().includes(q) || p.codigo.toLowerCase().includes(q));
+  document.getElementById('proj-selector').innerHTML = prods.map(p => `
+    <div class="prod-selector-item">
+      <input type="checkbox" id="pp-${p.id}" ${projProdsSelecionados[p.id] ? 'checked' : ''} onchange="toggleProjProd('${p.id}', this.checked)">
+      <label for="pp-${p.id}" style="flex:1;cursor:pointer">
+        <span style="font-weight:600">${p.modelo}</span>
+        <span class="text-sm" style="margin-left:8px">${p.codigo}</span>
+      </label>
+      <span class="tag">${p.linha}</span>
+    </div>
+  `).join('');
+}
+
+function toggleProjProd(id, checked) {
+  if (checked) { projProdsSelecionados[id] = projProdsSelecionados[id] || { qty: 1, obs: '' }; }
+  else { delete projProdsSelecionados[id]; }
+  renderProjSelectedTable();
+}
+
+function renderProjSelectedTable() {
+  const ids = Object.keys(projProdsSelecionados);
+  const cont = document.getElementById('proj-selected-container');
+  if (!ids.length) { cont.innerHTML = '<p class="text-sm" style="text-align:center;padding:10px">Nenhum produto selecionado</p>'; return; }
+  cont.innerHTML = `
+    <div class="section-title">Produtos selecionados (${ids.length})</div>
+    <div class="selected-prods">
+      <table>
+        <tr style="background:var(--bg3)">
+          <th style="font-size:11px;padding:8px 10px;color:var(--text2)">Produto</th>
+          <th style="font-size:11px;padding:8px 10px;color:var(--text2);width:80px">Qtd.</th>
+          <th style="font-size:11px;padding:8px 10px;color:var(--text2)">Obs.</th>
+          <th style="width:30px"></th>
+        </tr>
+        ${ids.map(id => {
+          const p = db.products.find(x => x.id === id);
+          if (!p) return '';
+          const item = projProdsSelecionados[id];
+          return `<tr>
+            <td>${p.modelo} <span class="text-sm">${p.codigo}</span></td>
+            <td><input type="number" value="${item.qty}" min="1" style="width:60px" onchange="projProdsSelecionados['${id}'].qty=parseInt(this.value)||1"></td>
+            <td><input value="${item.obs}" placeholder="obs..." onchange="projProdsSelecionados['${id}'].obs=this.value"></td>
+            <td><button class="btn btn-ghost btn-sm" onclick="toggleProjProd('${id}',false);document.getElementById('pp-${id}').checked=false" style="color:var(--danger);padding:4px">✕</button></td>
+          </tr>`;
+        }).join('')}
+      </table>
+    </div>
+  `;
+}
+
+function salvarProjeto() {
+  const id = document.getElementById('p-id').value;
+  const proj = {
+    id: id || uid(),
+    nome: document.getElementById('p-nome').value.trim(),
+    status: document.getElementById('p-status').value,
+    cliente: document.getElementById('p-cliente').value.trim(),
+    telefone: document.getElementById('p-telefone').value.trim(),
+    endereco: document.getElementById('p-endereco').value.trim(),
+    obs: document.getElementById('p-obs').value.trim(),
+    itens: Object.entries(projProdsSelecionados).map(([prodId, v]) => ({ prodId, qty: v.qty, obs: v.obs })),
+    criadoEm: id ? (db.projects.find(x => x.id === id)?.criadoEm || new Date().toLocaleDateString('pt-BR')) : new Date().toLocaleDateString('pt-BR'),
+  };
+  if (!proj.nome) { notif('Informe o nome do projeto', true); return; }
+  if (id) { const idx = db.projects.findIndex(x => x.id === id); if (idx >= 0) db.projects[idx] = proj; }
+  else { db.projects.push(proj); }
+  saveDB();
+  closeModal('modal-projeto');
+  renderProjetos();
+  notif('Projeto salvo!');
+}
+
+function excluirProjeto(id) {
+  if (!confirm('Excluir este projeto?')) return;
+  db.projects = db.projects.filter(p => p.id !== id);
+  saveDB(); renderProjetos(); notif('Projeto excluído');
+}
+
+function verProjeto(id) {
+  const p = db.projects.find(x => x.id === id);
+  if (!p) return;
+  const itens = (p.itens || []).map(item => {
+    const prod = db.products.find(x => x.id === item.prodId);
+    if (!prod) return '';
+    const total = parseFloat(prod.valor) * item.qty;
+    return `<tr>
+      <td style="padding:10px 12px">${prod.modelo}</td>
+      <td style="padding:10px 12px;font-size:12px;color:var(--text2)">${prod.codigo}</td>
+      <td style="padding:10px 12px">${item.qty}x</td>
+      <td style="padding:10px 12px">${fmtVal(prod.valor)}</td>
+      <td style="padding:10px 12px;font-weight:600;color:var(--accent)">${isNaN(total) ? '—' : fmtVal(total)}</td>
+      <td style="padding:10px 12px;font-size:12px;color:var(--text2)">${item.obs||'—'}</td>
+    </tr>`;
+  }).join('');
+
+  const totalGeral = (p.itens || []).reduce((acc, item) => {
+    const prod = db.products.find(x => x.id === item.prodId);
+    if (!prod) return acc;
+    const v = parseFloat(prod.valor) * item.qty;
+    return acc + (isNaN(v) ? 0 : v);
+  }, 0);
+
+  document.getElementById('modal-ver-proj-content').innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
+      <div>
+        <span class="proj-card-status status-${p.status}">${p.status}</span>
+        <h2 style="font-size:22px;font-weight:700;margin-top:6px">${p.nome}</h2>
+      </div>
+      <button class="btn btn-primary" onclick="closeModal('modal-ver-projeto');editarProjeto('${id}')">✏️ Editar</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:16px 0">
+      <div><div class="text-sm">Cliente</div><div style="font-weight:600">${p.cliente||'—'}</div></div>
+      <div><div class="text-sm">Telefone</div><div style="font-weight:600">${p.telefone||'—'}</div></div>
+      <div><div class="text-sm">Criado em</div><div style="font-weight:600">${p.criadoEm||'—'}</div></div>
+    </div>
+    <div style="margin-bottom:12px"><div class="text-sm">Endereço</div><div style="font-weight:600">${p.endereco||'—'}</div></div>
+    ${p.obs ? `<div style="margin-bottom:12px"><div class="text-sm">Observações</div><div style="color:var(--text2)">${p.obs}</div></div>` : ''}
+    <div class="divider"></div>
+    <div class="section-title">Produtos do Projeto</div>
+    ${itens ? `<div class="table-wrap">
+      <table>
+        <thead><tr><th>Produto</th><th>Código</th><th>Qtd.</th><th>Valor Unit.</th><th>Total</th><th>Obs.</th></tr></thead>
+        <tbody>${itens}</tbody>
+      </table>
+    </div>
+    <div style="text-align:right;padding:12px 0;font-size:15px">Total estimado: <strong style="color:var(--accent)">${fmtVal(totalGeral)}</strong></div>` : '<p class="text-sm">Nenhum produto adicionado.</p>'}
+    <div class="form-actions"><button class="btn" onclick="closeModal('modal-ver-projeto')">Fechar</button></div>
+  `;
+  openModal('modal-ver-projeto');
+}
+
+// ============ BACKUP ============
+function renderBackupInfo() {
+  document.getElementById('backup-info').innerHTML = `
+    📦 Produtos: <strong>${db.products.length}</strong><br>
+    🏗️ Projetos: <strong>${db.projects.length}</strong><br>
+    🛒 Lista de compra: <strong>${db.shopList.length} itens</strong><br>
+    💾 Tamanho aprox.: <strong>${(JSON.stringify(db).length / 1024).toFixed(1)} KB</strong><br>
+    🕐 Última atualização: <strong>${new Date().toLocaleString('pt-BR')}</strong>
+  `;
+}
+
+function exportarBackup() {
+  const blob = new Blob([JSON.stringify(db, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'MEE_Backup_' + new Date().toISOString().slice(0,10) + '.json';
+  a.click(); URL.revokeObjectURL(url);
+  notif('Backup exportado!');
+}
+
+function importarBackup(e) {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (!data.products) { notif('Arquivo inválido', true); return; }
+      if (!confirm('Isso vai substituir todos os dados atuais. Continuar?')) return;
+      db = data;
+      saveDB();
+      notif('Backup importado com sucesso!');
+      renderDashboard();
+    } catch { notif('Erro ao ler arquivo', true); }
+  };
+  reader.readAsText(file);
+}
+
+function exportarPlanilha() {
+  const cols = ['codigo','linha','categoria','modelo','descricao','fornecedor','modeloFornec','origem','cor','custo','valor','lucro','valorComod','estoque','obs'];
+  const headers = ['Código','Linha','Categoria','Modelo','Descrição','Fornecedor','Modelo Fornecedor','Origem','Cor','Custo','Valor Venda','Lucro','Valor Comodato','Estoque','Observações'];
+  const rows = db.products.map(p => cols.map(c => `"${(p[c]||'').replace(/"/g,'""')}"`).join(','));
+  const csv = [headers.join(','), ...rows].join('\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'MEE_Produtos_' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click(); URL.revokeObjectURL(url);
+  notif('Planilha exportada!');
+}
+
+function exportarProjetos() {
+  const rows = [];
+  db.projects.forEach(p => {
+    if (!p.itens || !p.itens.length) {
+      rows.push([p.nome, p.status, p.cliente, p.endereco, '', '', '', '', p.obs]);
+    } else {
+      p.itens.forEach((item, i) => {
+        const prod = db.products.find(x => x.id === item.prodId);
+        const total = prod ? (parseFloat(prod.valor) * item.qty).toFixed(2) : '';
+        rows.push([
+          i === 0 ? p.nome : '', i === 0 ? p.status : '', i === 0 ? p.cliente : '', i === 0 ? p.endereco : '',
+          prod ? prod.modelo : '', prod ? prod.codigo : '', item.qty, total, i === 0 ? p.obs : ''
+        ]);
+      });
+    }
+  });
+  const headers = ['Projeto','Status','Cliente','Endereço','Produto','Código','Qtd.','Total (R$)','Observações'];
+  const csv = [headers.join(','), ...rows.map(r => r.map(v => `"${String(v||'').replace(/"/g,'""')}"`).join(','))].join('\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'MEE_Projetos_' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click(); URL.revokeObjectURL(url);
+  notif('Projetos exportados!');
+}
+
+// ============ INIT ============
+loadDB();
+renderDashboard();
+populateFiltros();
+</script>
+</body>
+</html>
